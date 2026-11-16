@@ -1,0 +1,38 @@
+
+name: Build SW2 APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Extract source
+        run: unzip SW2_Companion_Free_Source.zip
+
+      - name: Build APK
+        run: |
+          cd SW2_Companion_Free
+          gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: SW2-Companion-APK
+          path: SW2_Companion_Free/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
